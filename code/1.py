@@ -51,8 +51,10 @@ class Road:
         self.segments = []
         self.segment_index = 0
 
+        self.segment_draw_distance = 50
+
     def load_roads(self):
-        self.create_segments(500)
+        self.create_segments(100)
 
         self.road_length = len(self.segments) * self.segment_length
 
