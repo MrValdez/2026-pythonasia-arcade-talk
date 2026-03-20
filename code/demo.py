@@ -404,20 +404,29 @@ class Game(arcade.Window):
         self.input = {}
         self.sprites = arcade.SpriteList()
 
-        self.sprite_car = arcade.Sprite("car.png")
-        self.sprite_car_width = self.sprite_car.width
+        car_back = "2D_Car_Pack_DevilsWorkShop_V01/car01/car01iso_0005.png"
+        car_left = "2D_Car_Pack_DevilsWorkShop_V01/car01/car01iso_0004.png"
+        car_right = "2D_Car_Pack_DevilsWorkShop_V01/car01/car01iso_0006.png"
+        self.sprite_car_l = arcade.texture.load_texture(car_left)
+        self.sprite_car_r = arcade.texture.load_texture(car_right)
+        self.sprite_car_n = arcade.texture.load_texture(car_back)
+
+        self.sprite_car = arcade.Sprite(self.sprite_car_n, scale=0.4)
+
         self.sprites.append(self.sprite_car)
 
         self.backgrounds = [
-            # image, depth, offset
+            # image, depth, scale, offset
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/back.png"),
-             0, [0, 0]),
+             0, 1, [0, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/buildings.png"),
-             10, [0, 0]),
+             10, 1, [0, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/buildings.png"),
-             10, [300, 0]),
+             10, 1, [300, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/palms.png"),
-             8, [300, 0])
+             8, 0.6, [300, 150]),
+            (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/palms.png"),
+             7, 0.5, [290, 140])
         ]
 
     def on_draw(self):
@@ -425,29 +434,34 @@ class Game(arcade.Window):
 
         camera_segment = self.camera.current_segment
 
-        for i, (bg, depth, offset) in enumerate(self.backgrounds):
+        for i, (bg, depth, scale, offset) in enumerate(self.backgrounds):
             if camera_segment and depth:
-                self.backgrounds[i][2][0] += (1 / depth) * camera_segment.curve * (self.player.speed * .2)
-            arcade.draw_texture_rect(bg, arcade.LBWH(offset[0], offset[1], screen_width, screen_height))
+                self.backgrounds[i][3][0] += (1 / depth) * camera_segment.curve * (self.player.speed * .2)
+            arcade.draw_texture_rect(bg, arcade.LBWH(offset[0], offset[1],
+                                                     screen_width*scale, screen_height*scale))
 
         #self.road.render2d()
         self.road.render3d(self.camera)
 
         current_i = self.road.get_segment_index(self.player.pos.z)
         current = self.road.segments[current_i]
+
+        if current.curve > 0:
+            self.sprite_car.texture = self.sprite_car_l
+        elif current.curve < 0:
+            self.sprite_car.texture = self.sprite_car_r
+        else:
+            self.sprite_car.texture = self.sprite_car_n
+
         position, scale = project3d(
             Vertex(self.player.pos.x, -current.world.y, self.player.pos.z),
             self.camera,
             0, 0,
-            1,
-            #self.sprite_car_width
+            self.sprite_car.width,
         )
 
-        # number to tweak. todo: haven't found a mathematical way to extract this correctly
-        scaling_constant = 1200
-
-        self.sprite_car.scale = 1 / (scaling_constant * -scale)
-        self.sprite_car.position = self.player.pos.x, -position.y
+        car_offset_y = 120   # small offset to allow us to see car
+        self.sprite_car.position = self.player.pos.x, position.y + car_offset_y
         self.sprites.draw()
 
     def on_key_press(self, key, modifiers):

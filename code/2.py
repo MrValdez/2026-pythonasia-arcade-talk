@@ -12,7 +12,7 @@ def project3d(point, camera, offset_x, offset_z, width):
     # project camera coordinates into projection plane
     projected = Vertex(
         translated_camera.x * scale,
-        -translated_camera.y * scale,
+        -translated_camera.y * scale,       # need to be negative as Arcade y axis starts at bottom
         width * scale,
     )
 
@@ -41,6 +41,7 @@ class Road:
 
         camera.current_segment  = camera_segment
 
+        current_clip = 0
         offset_x = 0
         offset_z = 0
         dx = 0

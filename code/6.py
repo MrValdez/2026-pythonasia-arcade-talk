@@ -45,7 +45,7 @@ class Road:
         offset_x = 0
         dx = camera_segment.curve * self.get_segment_per(camera.pos.z)
 
-        #drawn = 0
+        drawn = 0
         current_clip = 0
         camera.current_segment = camera_segment
 

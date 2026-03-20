@@ -21,3 +21,12 @@ class Road:
             #       of computing each time
             p1, _ = project3d(current_segment.world, camera, offset_x, offset_z, self.road_width)
             p2, _ = project3d(next_segment.world, camera, offset_x + dx, offset_z, self.road_width)
+
+            # Warning: removing these two ifs would make visual bug because we'll be drawing "behind the camera"
+            # clip segments behind us
+            if p1.z < 0 or p2.z < 0: continue
+
+            # clip segments blocked by tall segments
+            if p2.y < current_clip: continue
+
+

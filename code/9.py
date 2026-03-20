@@ -27,15 +27,17 @@ class Game(arcade.Window):
     def __init__(self):
         #...
         self.backgrounds = [
-            # image, depth, offset
+            # image, depth, scale, offset
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/back.png"),
-             0, [0, 0]),
+             0, 1, [0, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/buildings.png"),
-             10, [0, 0]),
+             10, 1, [0, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/buildings.png"),
-             10, [300, 0]),
+             10, 1, [300, 0]),
             (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/palms.png"),
-             8, [300, 0])
+             8, 0.6, [300, 150]),
+            (arcade.load_texture(":resources:/images/miami_synth_parallax/layers/palms.png"),
+             8, 0.5, [290, 140]),
         ]
 
     def on_draw(self):
@@ -43,7 +45,9 @@ class Game(arcade.Window):
 
         camera_segment = self.camera.current_segment
 
-        for i, (bg, depth, offset) in enumerate(self.backgrounds):
+        for i, (bg, depth, scale, offset) in enumerate(self.backgrounds):
             if camera_segment and depth:
-                self.backgrounds[i][2][0] += (1 / depth) * camera_segment.curve * (self.player.speed * .2)
-            arcade.draw_texture_rect(bg, arcade.LBWH(offset[0], offset[1], screen_width, screen_height))
+                self.backgrounds[i][3][0] += (1 / depth) * camera_segment.curve * (self.player.speed * .2)
+            arcade.draw_texture_rect(bg, arcade.LBWH(offset[0], offset[1],
+                                                    screen_width * scale, screen_height * scale))
+        #...

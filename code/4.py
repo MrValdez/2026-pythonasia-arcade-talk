@@ -53,26 +53,28 @@ class Game(arcade.Window):
         self.input = {}
         self.sprites = arcade.SpriteList()
 
-        self.sprite_car = arcade.Sprite("car.png")
-        self.sprite_car_width = self.sprite_car.width
+        car_back = "2D_Car_Pack_DevilsWorkShop_V01/car01/car01iso_0005.png"
+        self.sprite_car = arcade.Sprite(car_back, scale=0.4)
         self.sprites.append(self.sprite_car)
 
     def on_draw(self):
-        # ...
+        self.clear()
+
+        camera_segment = self.camera.current_segment
+
+        #self.road.render2d()
+        self.road.render3d(self.camera)
+
         current_i = self.road.get_segment_index(self.player.pos.z)
         current = self.road.segments[current_i]
+
         position, scale = project3d(
             Vertex(self.player.pos.x, -current.world.y, self.player.pos.z),
             self.camera,
             0, 0,
-            1,
-            #self.sprite_car_width
+            self.sprite_car.width,
         )
 
-        # number to tweak. todo: haven't found a mathematical way to extract this correctly
-        scaling_constant = 1200
-
-        self.sprite_car.scale = 1/ (scaling_constant * -scale)
         self.sprite_car.position = self.player.pos.x, -position.y
         self.sprites.draw()
 
