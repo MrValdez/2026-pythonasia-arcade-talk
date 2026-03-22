@@ -74,6 +74,13 @@ class GameGenie:
         self.current_sprite_i = 0
         self.current_sprite_change_trigger = 0
 
+        self.shock = arcade.Sprite(
+            arcade.texture.load_texture("shock.png"),
+        )
+        self.shock.position = [1300, 500]
+        self.is_shocked = False
+        self.sprites.append(self.shock)
+
         self.show_text = False
 
     def on_update(self, dt):
@@ -88,6 +95,17 @@ class GameGenie:
             self.on_update = self.scene_victory_update
 
             self.sprite_car.position = self.sprite_car.position[0], 120
+        elif self.passed_segments > 1200:
+            self.is_shocked = False
+            self.shock.visible = False
+        elif self.passed_segments > 1000:
+            self.is_shocked = True
+
+        if self.is_shocked:
+            pos_x = self.shock.position[0] - 40
+            pos_x = max(300, pos_x)
+            self.shock.position = (pos_x, self.shock.position[1])
+            self.shock.update()
 
     def scene_victory_update(self, dt):
         self.sprite_car.texture = self.sprite_car_textures[int(self.current_sprite_i)]
